@@ -1,0 +1,24 @@
+# OS files
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Neovim
+*.swp
+*.swo
+*.swn
+*.swm
+undo/
+backup/
+swap/
+tags
+.netrwhist
+
+# Local overrides (optional but recommended)
+*.local.lua
+*.local.vim
+.env
+.env.local
+
+# Plugin manager artifacts (if any end up here)
+.repro/
