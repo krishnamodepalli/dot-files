@@ -13,6 +13,7 @@ return {
                 'cssls',  -- CSS/SCSS/LESS
                 'somesass_ls', -- SCSS specific language server (good for cross-file variable completion)
                 'css_variables', -- Optionally helpful for CSS variables across files
+                'basedpyright', -- Python language server
             },
             automatic_installation = true,
         })
@@ -31,24 +32,7 @@ return {
             capabilities = capabilities,
         })
 
-        -- Configure servers using vim.lsp.config (modern Neovim 0.11+ way)
-        -- Lua language server with Neovim-specific settings
-        vim.lsp.config('lua_ls', {
-            settings = {
-                Lua = {
-                    runtime = { version = 'LuaJIT' },
-                    diagnostics = {
-                        globals = { 'vim' },
-                    },
-                    workspace = {
-                        library = vim.api.nvim_get_runtime_file('', true),
-                        checkThirdParty = false,
-                    },
-                },
-            },
-        })
-
-        -- Note: Servers are enabled in lua/lsp.lua
+        -- Note: Servers are configured and enabled in lua/lsp.lua
 
         -- Setup LSP keymaps on attach
         vim.api.nvim_create_autocmd('LspAttach', {
