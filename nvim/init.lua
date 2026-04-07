@@ -32,6 +32,7 @@ local themes = {
 require('lazy').setup({
   require(themes[env_var_nvim_theme]),
   require 'plugins.aerial',
+  require 'plugins.claudecode',
   require 'plugins.codecompanion',
   require 'plugins.gitsigns',
   require 'plugins.lsp.cmp',
