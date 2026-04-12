@@ -1,0 +1,9 @@
+config.json
+.credentials.json
+backups/
+cache/
+debug/
+file-history/
+projects/
+downloads/
+todos/
