@@ -1,10 +1,4 @@
 {
-  "env": {
-    "CLAUDE_CODE_USE_BEDROCK": "1",
-    "AWS_REGION": "ap-south-1",
-    "AWS_PROFILE": "main",
-    "ANTHROPIC_MODEL": "global.anthropic.claude-sonnet-4-6"
-  },
   "permissions": {
     "deny": [
       "Read(./.env)",
@@ -14,7 +8,6 @@
       "Read(~/.ssh/**)"
     ]
   },
-  "model": "global.anthropic.claude-sonnet-4-6",
   "hooks": {
     "PreToolUse": [
       {
@@ -29,5 +22,10 @@
     ]
   },
   "effortLevel": "medium",
-  "autoUpdatesChannel": "stable"
+  "autoUpdatesChannel": "stable",
+  "theme": "dark",
+  "statusLine": {
+    "type": "command",
+    "command": "bash /home/ubuntu/.claude/statusline-command.sh"
+  }
 }
