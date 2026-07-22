@@ -2,6 +2,8 @@
 return {
   'nvim-treesitter/nvim-treesitter',
   build = ':TSUpdate',
+  event = { 'BufReadPost', 'BufNewFile' },
+  cmd = { 'TSUpdate', 'TSUpdateSync', 'TSInstall', 'TSInstallInfo' },
   dependencies = {
     'nvim-treesitter/nvim-treesitter-textobjects',
   },

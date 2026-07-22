@@ -3,6 +3,12 @@ return {
   dependencies = {
     "nvim-tree/nvim-web-devicons",
   },
+  keys = {
+    { "<M-1>", desc = "Toggle File Explorer" },
+    { "<leader>ef", desc = "Explorer Find File" },
+    { "<leader>ec", desc = "Explorer Collapse All" },
+  },
+  cmd = { "NvimTreeToggle", "NvimTreeFocus", "NvimTreeFindFile", "NvimTreeOpen" },
 
   config = function()
     local api = require("nvim-tree.api")
