@@ -16,6 +16,12 @@ return {
         local luasnip = require('luasnip')
 
         cmp.setup({
+            performance = {
+                debounce = 60,
+                throttle = 30,
+                fetching_timeout = 200,
+                max_view_entries = 20,
+            },
             snippet = {
                 expand = function(args)
                     luasnip.lsp_expand(args.body)
@@ -50,7 +56,16 @@ return {
                 { name = 'nvim_lsp' },
                 { name = 'luasnip' },
             }, {
-                { name = 'buffer' },
+                {
+                    name = 'buffer',
+                    keyword_length = 3,
+                    max_item_count = 5,
+                    option = {
+                        get_bufnrs = function()
+                            return { vim.api.nvim_get_current_buf() }
+                        end,
+                    },
+                },
                 { name = 'path' },
             }),
             window = {
