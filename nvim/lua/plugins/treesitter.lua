@@ -44,7 +44,14 @@ return {
       auto_install = true,
 
       highlight = { enable = true },
-      indent = { enable = false },
+      indent = {
+        enable = true,
+        disable = function(_, buf)
+          local max_size = 100 * 1024 -- disable on files larger than 100 KB
+          local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+          return ok and stats and stats.size > max_size
+        end,
+      },
       incremental_selection = {
         enable = true,
         keymaps = {
