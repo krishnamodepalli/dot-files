@@ -8,7 +8,7 @@ return {
     { '<M-g>f', '<cmd>Telescope find_files<cr>', desc = 'Telescope find files' },
     { '<M-g>s', '<cmd>Telescope lsp_document_symbols<cr>', desc = 'Telescope find document symbols' },
     { '<leader>rg', '<cmd>Telescope live_grep<cr>', desc = 'Telescope live grep' },
-    { '<leader>fb', '<cmd>Telescope buffers<cr>', desc = 'Telescope buffers' },
+    { '<M-g>b', '<cmd>Telescope buffers<cr>', desc = 'Telescope buffers' },
     { '<leader>fh', '<cmd>Telescope help_tags<cr>', desc = 'Telescope help tags' },
     { '<leader>fs', '<cmd>Telescope grep_string<cr>', desc = 'Telescope grep string' },
     { '<M-g>r', '<cmd>Telescope oldfiles<cr>', desc = 'Telescope old files' },

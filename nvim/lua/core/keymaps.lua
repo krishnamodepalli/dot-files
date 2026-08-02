@@ -6,6 +6,9 @@ vim.g.maplocalleader = ';'
 
 -- For conciseness
 local opts = { noremap = true, silent = true }
+local function with_desc(opts, desc)
+  return vim.tbl_extend('force', opts or {}, { desc = desc })
+end
 
 -- Disable the spacebar key's default behavior in Normal and Visual modes
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
@@ -21,7 +24,7 @@ vim.keymap.set('n', '<Esc>', ':noh<CR>', opts)
 vim.keymap.set('n', '<C-s>', '<cmd> w <CR>', opts)
 
 -- save file without auto-formatting
-vim.keymap.set('n', '<leader><space>', '<cmd>noautocmd w <CR>', opts)
+vim.keymap.set('n', '<leader><space>', '<cmd>noautocmd w<CR>', with_desc(opts, "Save Buffer"))
 
 -- quit file
 vim.keymap.set('n', '<C-q>', '<cmd> q <CR>', opts)
@@ -49,11 +52,13 @@ vim.keymap.set('n', '<leader>tx', ':tabclose<CR>', opts)
 vim.keymap.set('n', '<Tab>', ':tabnext<CR>', opts)
 vim.keymap.set('n', '<S-Tab>', ':tabprevious<CR>', opts)
 vim.keymap.set('n', '<leader>x', ':bdelete!<CR>', opts) -- close buffer
+vim.keymap.set('n', '<M-w>', ':bdelete!<CR>', opts) -- close buffer
 vim.keymap.set('n', '<leader>b', '<cmd> enew <CR>', opts) -- new buffer
 vim.keymap.set('n', '<M-j>', ':bnext<CR>', opts)
 vim.keymap.set('n', '<M-l>', ':bprevious<CR>', opts)
 vim.keymap.set('n', '<M-->', ':buffer #<CR>', opts) -- Go to previous buffer
 vim.keymap.set('n', '<M-BS>', ':%bd!<CR>', opts)     -- Close all buffers
+vim.keymap.set('n', '<M-W>', ':%bd|e#|bd#<CR>', opts) -- Close all buffers except current
 
 -- Window management
 vim.keymap.set('n', '<leader>wv', '<C-w>v', opts) -- split window vertically
@@ -91,6 +96,18 @@ vim.keymap.set('n', '<leader>Y', [["+Y]])
 vim.keymap.set('v', '<leader>s', ':sort<CR>', opts)
 vim.keymap.set('v', '<leader>us', ':sort u<CR>', opts)
 
+-- Copy the current file path
+vim.keymap.set('n', '<leader>yf', function()
+  vim.fn.setreg('+', vim.fn.expand('%'))
+  print('Copied: ' .. vim.fn.expand('%'))
+end, { desc = 'Copy file path' })
+
+-- Strip trailing whitespaces
+vim.keymap.set('n', '<leader>cf', function()
+  local save = vim.fn.winsaveview()
+  vim.cmd([[%s/\s\+$//e]])
+  vim.fn.winrestview(save)
+end, { desc = 'Strip trailing whitespace' })
 
 -- Keymaps for case conversion
 local case = require("utils.case_convert")
