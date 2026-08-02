@@ -1,59 +1,57 @@
 #!/usr/bin/env bash
 input=$(cat)
 
-width="${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}"
-
-# LEFT: project and branch
-proj=$(echo "$input" | jq -r '.workspace.repo.name // empty')
-if [ -z "$proj" ]; then
-  proj=$(echo "$input" | jq -r '.workspace.current_dir' | xargs basename 2>/dev/null)
+if [ -n "$NO_COLOR" ]; then
+  reset=""; dim=""; c_red=""; c_yellow=""; c_green=""; c_cyan=""
+else
+  reset=$'\033[0m'
+  dim=$'\033[2m'
+  c_red=$'\033[31m'
+  c_yellow=$'\033[33m'
+  c_green=$'\033[32m'
+  c_cyan=$'\033[36m'
 fi
 
-branch=$(git -C "$(echo "$input" | jq -r '.workspace.current_dir')" \
-  --no-optional-locks symbolic-ref --short HEAD 2>/dev/null)
+cwd=$(jq -r '.workspace.current_dir' <<< "$input")
 
-left=""
-left_len=0
+proj=$(jq -r '.workspace.repo.name // empty' <<< "$input")
+[ -z "$proj" ] && proj=$(basename "$cwd" 2>/dev/null)
 
-if [ -n "$proj" ]; then
-  left="🗂 ${proj}"
-  # 🗂 is 2 terminal cols wide, + 1 space + proj chars
-  left_len=$(( 3 + ${#proj} ))
-fi
+branch=$(git -C "$cwd" --no-optional-locks symbolic-ref --short HEAD 2>/dev/null)
 
-if [ -n "$branch" ]; then
-  part="⎇ ${branch}"
-  # ⎇ is 1 col wide + 1 space + branch chars
-  part_len=$(( 2 + ${#branch} ))
-  if [ -n "$left" ]; then
-    left="${left}   ${part}"
-    left_len=$(( left_len + 3 + part_len ))
-  else
-    left="$part"
-    left_len=$part_len
-  fi
-fi
+model=$(jq -r '.model.display_name // empty' <<< "$input")
 
-# RIGHT: usage stats, no emojis, plain text
-ctx=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
-five=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
-week=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
+ctx=$(jq -r '.context_window.used_percentage // empty' <<< "$input")
+five=$(jq -r '.rate_limits.five_hour.used_percentage // empty' <<< "$input")
+week=$(jq -r '.rate_limits.seven_day.used_percentage // empty' <<< "$input")
 
-right_parts=()
-[ -n "$ctx" ]  && right_parts+=("ctx $(printf '%.0f' "$ctx")%")
-[ -n "$five" ] && right_parts+=("5h $(printf '%.0f' "$five")%")
-[ -n "$week" ] && right_parts+=("7d $(printf '%.0f' "$week")%")
+# label a percentage, colored by severity (green < 50, yellow < 80, red >= 80)
+fmt_pct() {
+  local label="$1" pct="$2"
+  [ -z "$pct" ] && return
+  local rounded color
+  rounded=$(printf '%.0f' "$pct")
+  color=$(awk -v p="$pct" -v r="$c_red" -v y="$c_yellow" -v g="$c_green" \
+    'BEGIN { print (p >= 80) ? r : (p >= 50) ? y : g }')
+  printf '%s%s %s%s%%%s' "$dim" "$label" "$reset$color" "$rounded" "$reset"
+}
 
-right=""
-for part in "${right_parts[@]}"; do
-  [ -z "$right" ] && right="$part" || right="${right}  ·  ${part}"
+segments=()
+[ -n "$proj" ]   && segments+=("🗂 ${proj}")
+[ -n "$branch" ] && segments+=("⎇ ${branch}")
+[ -n "$model" ]  && segments+=("${c_cyan}${model}${reset}")
+
+pct_ctx=$(fmt_pct "ctx" "$ctx")
+pct_5h=$(fmt_pct "5h" "$five")
+pct_7d=$(fmt_pct "7d" "$week")
+[ -n "$pct_ctx" ] && segments+=("$pct_ctx")
+[ -n "$pct_5h" ]  && segments+=("$pct_5h")
+[ -n "$pct_7d" ]  && segments+=("$pct_7d")
+
+sep="  ${dim}·${reset}  "
+line=""
+for seg in "${segments[@]}"; do
+  [ -z "$line" ] && line="$seg" || line="${line}${sep}${seg}"
 done
 
-right_len=${#right}
-
-# Padding to right-align stats
-pad=$(( width - left_len - right_len ))
-[ "$pad" -lt 1 ] && pad=1
-padding=$(printf '%*s' "$pad" '')
-
-printf "%s%s%s\n" "$left" "$padding" "$right"
+printf '%s\n' "$line"
