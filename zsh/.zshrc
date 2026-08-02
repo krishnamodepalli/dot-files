@@ -13,7 +13,7 @@ export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-plugins=(git)
+plugins=(git zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -22,8 +22,14 @@ source $ZSH/oh-my-zsh.sh
 
 # Customization by vamsi
 
-# Settings
+# ------------SSH AGENT-----------
+if [[ -S "/run/user/$(id -u)/keyring/ssh" ]]; then
+  export SSH_AUTH_SOCK="/run/user/$(id -u)/keyring/ssh"
+fi
+
+# Options
 bindkey '^H' backward-kill-word
+COLORTERM=truecolor
 
 # -----------SYSTEM---------------
 alias uu="sudo apt update; sudo apt upgrade -y"
@@ -31,6 +37,7 @@ alias apt="sudo apt"
 alias ai="sudo apt install"
 alias ar="sudo apt remove"
 alias dpkg="sudo dpkg"
+alias xa="xargs"
 
 eenv() {
   local file="${1:-.env}"
@@ -119,6 +126,13 @@ alias bat="batcat"
 # ------------MISC----------------
 alias myip="curl -s https://checkip.amazonaws.com"
 
+# MISC Commands
+mdview() {
+  local tmpfile
+  tmpfile=$(mktemp --suffix=.html)
+  pandoc "$1" -s -o "$tmpfile" && brave-browser "$tmpfile"
+}
+
 # ------------SECRETS-------------
 [[ -f ~/.zsh_secrets ]] && source ~/.zsh_secrets
 
@@ -156,3 +170,6 @@ eval "$(direnv hook zsh)"
 
 # uv completions
 eval "$(uv generate-shell-completion zsh)"
+
+# opencode
+export PATH=/home/ubuntu/.opencode/bin:$PATH
