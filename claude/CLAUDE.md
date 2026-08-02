@@ -49,3 +49,6 @@ gh pr view 42 --json title,body,labels,state | jq '{title, state, labels: [.labe
 gh pr list --json number,title,headRefName | jq '.[] | "\(.number) \(.title)"'
 gh issue list --json number,title,labels | jq '.[] | select(.labels[].name == "bug")'
 ```
+# graphify
+- **graphify** (`~/.claude/skills/graphify/SKILL.md`) - any input to knowledge graph. Trigger: `/graphify`
+When the user types `/graphify`, invoke the Skill tool with `skill: "graphify"` before doing anything else.
