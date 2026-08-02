@@ -21,11 +21,29 @@
       }
     ]
   },
-  "effortLevel": "medium",
-  "autoUpdatesChannel": "stable",
-  "theme": "dark",
   "statusLine": {
     "type": "command",
     "command": "bash /home/ubuntu/.claude/statusline-command.sh"
-  }
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true,
+    "claude-code-wakatime@wakatime": true
+  },
+  "extraKnownMarketplaces": {
+    "wakatime": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/wakatime/claude-code-wakatime.git"
+      }
+    }
+  },
+  "effortLevel": "medium",
+  "autoUpdatesChannel": "stable",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "theme": "dark",
+  "voiceEnabled": true,
+  "model": "haiku"
 }
