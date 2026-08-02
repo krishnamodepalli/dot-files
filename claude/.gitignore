@@ -17,3 +17,10 @@ todos/
 ide/
 plugins/
 memory/
+plans/
+tasks/
+chrome/
+.last-update-result.json
+daemon-auth-cooldown
+daemon-auth-status.json
+mcp-needs-auth-cache.json
