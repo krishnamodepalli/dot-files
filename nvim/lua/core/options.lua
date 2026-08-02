@@ -42,19 +42,28 @@ vim.opt.formatoptions:remove { 'c', 'r', 'o' } -- don't insert the current comme
 vim.opt.runtimepath:remove '/usr/share/vim/vimfiles' -- separate vim plugins from neovim in case vim still in use
 vim.g.editorconfig = true -- auto-detect .editorconfig and apply per-project settings
 
--- auto-cmds
--- Auto copy yanked content in the + register to Windows clipboard using clip.exe
-vim.api.nvim_create_augroup('CopyToClipboard', { clear = true })
-vim.api.nvim_create_autocmd('TextYankPost', {
-  group = 'CopyToClipboard',
-  pattern = '*',
-  callback = function()
-    if vim.v.event.regname == '+' then
-      -- Get content from the + register and send to clip.exe
-      local reg_contents = vim.fn.getreg('+')
-      vim.fn.system('echo ' .. vim.fn.shellescape(reg_contents) .. ' | clip.exe')
-    end
+-- Clipboard provider.
+-- This is a Wayland session, so prefer wl-clipboard over xclip: xclip talks to
+-- Xwayland and breaks with "Authorization required" whenever nvim inherits a
+-- stale XAUTHORITY (e.g. a tmux session outliving the login that created it).
+-- wl-copy only needs WAYLAND_DISPLAY, which we default when it's missing.
+if vim.fn.executable 'wl-copy' == 1 and vim.fn.executable 'wl-paste' == 1 then
+  if vim.env.WAYLAND_DISPLAY == nil or vim.env.WAYLAND_DISPLAY == '' then
+    vim.env.WAYLAND_DISPLAY = 'wayland-0'
   end
-})
+
+  vim.g.clipboard = {
+    name = 'wl-clipboard',
+    copy = {
+      ['+'] = { 'wl-copy', '--type', 'text/plain' },
+      ['*'] = { 'wl-copy', '--primary', '--type', 'text/plain' },
+    },
+    paste = {
+      ['+'] = { 'wl-paste', '--no-newline' },
+      ['*'] = { 'wl-paste', '--no-newline', '--primary' },
+    },
+    cache_enabled = 1,
+  }
+end
 
 
