@@ -1,11 +1,15 @@
 -- Highlight, edit, and navigate code
 return {
   'nvim-treesitter/nvim-treesitter',
+  -- Pinned: the default branch is now `main`, a full incompatible rewrite that
+  -- drops `nvim-treesitter.configs` and requires Neovim 0.12 + the tree-sitter CLI.
+  -- `master` is frozen upstream but supported, and still works on 0.11.
+  branch = 'master',
   build = ':TSUpdate',
   event = { 'BufReadPost', 'BufNewFile' },
   cmd = { 'TSUpdate', 'TSUpdateSync', 'TSInstall', 'TSInstallInfo' },
   dependencies = {
-    'nvim-treesitter/nvim-treesitter-textobjects',
+    { 'nvim-treesitter/nvim-treesitter-textobjects', branch = 'master' },
   },
   config = function()
     require('nvim-treesitter.configs').setup {
@@ -44,14 +48,11 @@ return {
       auto_install = true,
 
       highlight = { enable = true },
-      indent = {
-        enable = true,
-        disable = function(_, buf)
-          local max_size = 100 * 1024 -- disable on files larger than 100 KB
-          local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-          return ok and stats and stats.size > max_size
-        end,
-      },
+
+      -- Treesitter indent is off: it re-parses on every keystroke and is the
+      -- main source of typing lag. Neovim's built-in `filetype indent on`
+      -- (runtime/indent/*.vim) covers our languages at zero cost.
+      indent = { enable = false },
       incremental_selection = {
         enable = true,
         keymaps = {
