@@ -41,6 +41,7 @@ return {
         'typescript',
         'vim',
         'vimdoc',
+        'xml',
         'yaml',
       },
 
