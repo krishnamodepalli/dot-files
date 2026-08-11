@@ -2,3 +2,5 @@
 # Log files
 *.log
 
+# Plugins
+plugins/
